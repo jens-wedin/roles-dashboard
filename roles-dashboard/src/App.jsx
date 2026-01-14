@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import Select from 'react-select'
 import { supabase } from './supabaseClient'
 import RoleList from './components/RoleList'
 import './App.css'
@@ -36,36 +37,42 @@ function App() {
     const allIndustries = roles.flatMap((role) =>
       role.industry ? role.industry.split(',').map((item) => item.trim()) : []
     ).filter(Boolean);
-    return ['', ...new Set(allIndustries)];
+    const options = [...new Set(allIndustries)].sort().map((industry) => ({ value: industry, label: industry }));
+    return [{ value: '', label: 'All Industries' }, ...options];
   }, [roles]);
 
   const uniqueLevels = useMemo(() => {
     const levels = roles.map((role) => role['org-level']).filter(Boolean);
-    return ['', ...new Set(levels)].sort();
+    const options = [...new Set(levels)].sort().map((level) => ({ value: level, label: level }));
+    return [{ value: '', label: 'All Org-Levels' }, ...options];
   }, [roles]);
 
   const uniqueMediums = useMemo(() => {
     const mediums = roles.map((role) => role.medium).filter(Boolean);
-    return ['', ...new Set(mediums)].sort();
+    const options = [...new Set(mediums)].sort().map((medium) => ({ value: medium, label: medium }));
+    return [{ value: '', label: 'All Mediums' }, ...options];
   }, [roles]);
 
   const filteredRoles = useMemo(() => {
     return roles.filter((role) => {
       // Industry filter (handles comma-separated values)
       const roleIndustries = role.industry ? role.industry.split(',').map(item => item.trim()) : [];
+      const selectedIndustryValues = selectedIndustry.map(option => option.value);
       const matchesIndustry =
-        selectedIndustry.length === 0 ||
-        selectedIndustry.some((filterVal) => roleIndustries.includes(filterVal));
+        selectedIndustryValues.length === 0 ||
+        selectedIndustryValues.some((filterVal) => roleIndustries.includes(filterVal));
 
       // Org-Level filter
+      const selectedLevelValues = selectedLevel.map(option => option.value);
       const matchesLevel =
-        selectedLevel.length === 0 ||
-        selectedLevel.includes(role['org-level']);
+        selectedLevelValues.length === 0 ||
+        selectedLevelValues.includes(role['org-level']);
 
       // Medium filter
+      const selectedMediumValues = selectedMedium.map(option => option.value);
       const matchesMedium =
-        selectedMedium.length === 0 ||
-        selectedMedium.includes(role.medium);
+        selectedMediumValues.length === 0 ||
+        selectedMediumValues.includes(role.medium);
 
       return matchesIndustry && matchesLevel && matchesMedium;
     });
@@ -80,70 +87,58 @@ function App() {
 
       <div className="filters" style={{ marginBottom: '20px' }}>
         <label htmlFor="industry-filter">Industry:</label>
-        <select
+        <Select
           id="industry-filter"
-          multiple
+          isMulti
+          options={uniqueIndustries}
           value={selectedIndustry}
-          onChange={(e) => {
-            const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
-            if (selectedValues.includes('')) {
+          onChange={(selectedOptions) => {
+            if (selectedOptions && selectedOptions.some(option => option.value === '')) {
               setSelectedIndustry([]);
             } else {
-              setSelectedIndustry(selectedValues);
+              setSelectedIndustry(selectedOptions);
             }
           }}
-          style={{ marginRight: '10px', minWidth: '150px', minHeight: '80px' }}
-        >
-          {uniqueIndustries.map((industry) => (
-            <option key={industry} value={industry}>
-              {industry === '' ? 'All Industries' : industry}
-            </option>
-          ))}
-        </select>
+          className="react-select-container"
+          classNamePrefix="react-select"
+          placeholder="Select Industries"
+        />
 
         <label htmlFor="level-filter">Org-Level:</label>
-        <select
+        <Select
           id="level-filter"
-          multiple
+          isMulti
+          options={uniqueLevels}
           value={selectedLevel}
-          onChange={(e) => {
-            const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
-            if (selectedValues.includes('')) {
+          onChange={(selectedOptions) => {
+            if (selectedOptions && selectedOptions.some(option => option.value === '')) {
               setSelectedLevel([]);
             } else {
-              setSelectedLevel(selectedValues);
+              setSelectedLevel(selectedOptions);
             }
           }}
-          style={{ marginRight: '10px', minWidth: '150px', minHeight: '80px' }}
-        >
-          {uniqueLevels.map((level) => (
-            <option key={level} value={level}>
-              {level === '' ? 'All Org-Levels' : level}
-            </option>
-          ))}
-        </select>
+          className="react-select-container"
+          classNamePrefix="react-select"
+          placeholder="Select Org-Levels"
+        />
 
         <label htmlFor="medium-filter">Medium:</label>
-        <select
+        <Select
           id="medium-filter"
-          multiple
+          isMulti
+          options={uniqueMediums}
           value={selectedMedium}
-          onChange={(e) => {
-            const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
-            if (selectedValues.includes('')) {
+          onChange={(selectedOptions) => {
+            if (selectedOptions && selectedOptions.some(option => option.value === '')) {
               setSelectedMedium([]);
             } else {
-              setSelectedMedium(selectedValues);
+              setSelectedMedium(selectedOptions);
             }
           }}
-          style={{ minWidth: '150px', minHeight: '80px' }}
-        >
-          {uniqueMediums.map((medium) => (
-            <option key={medium} value={medium}>
-              {medium === '' ? 'All Mediums' : medium}
-            </option>
-          ))}
-        </select>
+          className="react-select-container"
+          classNamePrefix="react-select"
+          placeholder="Select Mediums"
+        />
       </div>
 
       <RoleList roles={filteredRoles} />
