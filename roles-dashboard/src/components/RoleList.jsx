@@ -1,6 +1,19 @@
 import React from 'react';
 
 const RoleList = ({ roles }) => {
+  // Helper function to convert a string with list items into an unordered HTML list
+  const formatToList = (text) => {
+    if (!text) return null;
+    const items = text.split('\n').filter(item => item.trim() !== '');
+    return (
+      <ul>
+        {items.map((item, index) => (
+          <li key={index}>{item.replace(/^- /, '').replace(/^\* /, '').trim()}</li>
+        ))}
+      </ul>
+    );
+  };
+
   // Helper function to generate a consistent color for badges
   const getBadgeColor = (text) => {
     if (!text) return '#cccccc'; // Default gray for empty
@@ -28,10 +41,16 @@ const RoleList = ({ roles }) => {
             <p><strong>Description:</strong> {role.description}</p>
 
             {role.responsibilities && (
-              <p><strong>Responsibilities:</strong> {role.responsibilities}</p>
+              <div>
+                <p><strong>Responsibilities:</strong></p>
+                {formatToList(role.responsibilities)}
+              </div>
             )}
             {role.skills && (
-              <p><strong>Skills:</strong> {role.skills}</p>
+              <div>
+                <p><strong>Skills:</strong></p>
+                {formatToList(role.skills)}
+              </div>
             )}
 
             <div style={{ margin: '10px 0' }}>
