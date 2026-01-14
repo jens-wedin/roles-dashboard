@@ -7,9 +7,9 @@ function App() {
   const [roles, setRoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [selectedIndustry, setSelectedIndustry] = useState('')
-  const [selectedLevel, setSelectedLevel] = useState('')
-  const [selectedMedium, setSelectedMedium] = useState('')
+  const [selectedIndustry, setSelectedIndustry] = useState([])
+  const [selectedLevel, setSelectedLevel] = useState([])
+  const [selectedMedium, setSelectedMedium] = useState([])
 
   useEffect(() => {
     getRoles()
@@ -33,25 +33,40 @@ function App() {
   }
 
   const uniqueIndustries = useMemo(() => {
-    const industries = roles.map((role) => role.industry).filter(Boolean);
-    return ['', ...new Set(industries)];
+    const allIndustries = roles.flatMap((role) =>
+      role.industry ? role.industry.split(',').map((item) => item.trim()) : []
+    ).filter(Boolean);
+    return ['', ...new Set(allIndustries)];
   }, [roles]);
 
   const uniqueLevels = useMemo(() => {
     const levels = roles.map((role) => role['org-level']).filter(Boolean);
-    return ['', ...new Set(levels)];
+    return ['', ...new Set(levels)].sort();
   }, [roles]);
 
   const uniqueMediums = useMemo(() => {
     const mediums = roles.map((role) => role.medium).filter(Boolean);
-    return ['', ...new Set(mediums)];
+    return ['', ...new Set(mediums)].sort();
   }, [roles]);
 
   const filteredRoles = useMemo(() => {
     return roles.filter((role) => {
-      const matchesIndustry = selectedIndustry ? role.industry === selectedIndustry : true;
-      const matchesLevel = selectedLevel ? role['org-level'] === selectedLevel : true;
-      const matchesMedium = selectedMedium ? role.medium === selectedMedium : true;
+      // Industry filter (handles comma-separated values)
+      const roleIndustries = role.industry ? role.industry.split(',').map(item => item.trim()) : [];
+      const matchesIndustry =
+        selectedIndustry.length === 0 ||
+        selectedIndustry.some((filterVal) => roleIndustries.includes(filterVal));
+
+      // Org-Level filter
+      const matchesLevel =
+        selectedLevel.length === 0 ||
+        selectedLevel.includes(role['org-level']);
+
+      // Medium filter
+      const matchesMedium =
+        selectedMedium.length === 0 ||
+        selectedMedium.includes(role.medium);
+
       return matchesIndustry && matchesLevel && matchesMedium;
     });
   }, [roles, selectedIndustry, selectedLevel, selectedMedium]);
@@ -67,13 +82,18 @@ function App() {
         <label htmlFor="industry-filter">Industry:</label>
         <select
           id="industry-filter"
+          multiple
           value={selectedIndustry}
-          onChange={(e) => setSelectedIndustry(e.target.value)}
-          style={{ marginRight: '10px' }}
+          onChange={(e) =>
+            setSelectedIndustry(
+              Array.from(e.target.selectedOptions, (option) => option.value)
+            )
+          }
+          style={{ marginRight: '10px', minWidth: '150px', minHeight: '80px' }}
         >
           {uniqueIndustries.map((industry) => (
             <option key={industry} value={industry}>
-              {industry || 'All Industries'}
+              {industry === '' ? 'All Industries' : industry}
             </option>
           ))}
         </select>
@@ -81,13 +101,18 @@ function App() {
         <label htmlFor="level-filter">Org-Level:</label>
         <select
           id="level-filter"
+          multiple
           value={selectedLevel}
-          onChange={(e) => setSelectedLevel(e.target.value)}
-          style={{ marginRight: '10px' }}
+          onChange={(e) =>
+            setSelectedLevel(
+              Array.from(e.target.selectedOptions, (option) => option.value)
+            )
+          }
+          style={{ marginRight: '10px', minWidth: '150px', minHeight: '80px' }}
         >
           {uniqueLevels.map((level) => (
             <option key={level} value={level}>
-              {level || 'All Levels'}
+              {level === '' ? 'All Org-Levels' : level}
             </option>
           ))}
         </select>
@@ -95,12 +120,18 @@ function App() {
         <label htmlFor="medium-filter">Medium:</label>
         <select
           id="medium-filter"
+          multiple
           value={selectedMedium}
-          onChange={(e) => setSelectedMedium(e.target.value)}
+          onChange={(e) =>
+            setSelectedMedium(
+              Array.from(e.target.selectedOptions, (option) => option.value)
+            )
+          }
+          style={{ minWidth: '150px', minHeight: '80px' }}
         >
           {uniqueMediums.map((medium) => (
             <option key={medium} value={medium}>
-              {medium || 'All Mediums'}
+              {medium === '' ? 'All Mediums' : medium}
             </option>
           ))}
         </select>
