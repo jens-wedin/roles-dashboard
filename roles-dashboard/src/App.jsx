@@ -85,7 +85,7 @@ function App() {
     <div className="App">
       <h1>Design Roles Dashboard</h1>
 
-      <div className="filters" style={{ marginBottom: '20px' }}>
+      <div className="filters" style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
         <label htmlFor="industry-filter">Industry:</label>
         <Select
           id="industry-filter"
