@@ -16,13 +16,15 @@ const RoleList = ({ roles }) => {
     return color;
   };
 
+  console.log('Roles in RoleList:', roles); // Add this line for debugging
+
   return (
     <div>
       <h2>Design Roles</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
         {roles.map((role) => (
-          <div key={role.id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '8px', boxShadow: '2px 2px 8px rgba(0,0,0,0.1)' }}>
-            <h3>{role.role_name}</h3>
+          <div key={role.id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '8px', boxShadow: '2px 2px 8px rgba(0,0,0,0.1)', textAlign: 'left' }}>
+            <h3>{role['role-name']}</h3>
             <p><strong>Description:</strong> {role.description}</p>
 
             {role.responsibilities && (
@@ -85,7 +87,7 @@ const RoleList = ({ roles }) => {
             </div>
 
             {Object.keys(role).map((key) => {
-              const excludedKeys = ['id', 'role_name', 'description', 'responsibilities', 'skills', 'industry', 'org-level', 'medium'];
+              const excludedKeys = ['id', 'role-name', 'description', 'responsibilities', 'skills', 'industry', 'org-level', 'medium'];
               if (!excludedKeys.includes(key) && role[key] !== null) {
                 return (
                   <p key={key}>
