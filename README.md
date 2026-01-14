@@ -2,6 +2,10 @@
 
 This project is a React application built with Vite that displays a dashboard of design roles and their metadata, fetched from a Supabase database.
 
+You can see the live example here
+https://jens-wedin.github.io/roles-dashboard/
+
+
 ## Features
 
 *   **Vite + React:** Modern frontend development setup.
