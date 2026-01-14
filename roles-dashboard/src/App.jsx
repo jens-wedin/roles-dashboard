@@ -84,11 +84,14 @@ function App() {
           id="industry-filter"
           multiple
           value={selectedIndustry}
-          onChange={(e) =>
-            setSelectedIndustry(
-              Array.from(e.target.selectedOptions, (option) => option.value)
-            )
-          }
+          onChange={(e) => {
+            const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
+            if (selectedValues.includes('')) {
+              setSelectedIndustry([]);
+            } else {
+              setSelectedIndustry(selectedValues);
+            }
+          }}
           style={{ marginRight: '10px', minWidth: '150px', minHeight: '80px' }}
         >
           {uniqueIndustries.map((industry) => (
@@ -103,11 +106,14 @@ function App() {
           id="level-filter"
           multiple
           value={selectedLevel}
-          onChange={(e) =>
-            setSelectedLevel(
-              Array.from(e.target.selectedOptions, (option) => option.value)
-            )
-          }
+          onChange={(e) => {
+            const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
+            if (selectedValues.includes('')) {
+              setSelectedLevel([]);
+            } else {
+              setSelectedLevel(selectedValues);
+            }
+          }}
           style={{ marginRight: '10px', minWidth: '150px', minHeight: '80px' }}
         >
           {uniqueLevels.map((level) => (
@@ -122,11 +128,14 @@ function App() {
           id="medium-filter"
           multiple
           value={selectedMedium}
-          onChange={(e) =>
-            setSelectedMedium(
-              Array.from(e.target.selectedOptions, (option) => option.value)
-            )
-          }
+          onChange={(e) => {
+            const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
+            if (selectedValues.includes('')) {
+              setSelectedMedium([]);
+            } else {
+              setSelectedMedium(selectedValues);
+            }
+          }}
           style={{ minWidth: '150px', minHeight: '80px' }}
         >
           {uniqueMediums.map((medium) => (
