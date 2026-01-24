@@ -42,13 +42,13 @@ function App() {
   }, [roles]);
 
   const uniqueLevels = useMemo(() => {
-    const levels = roles.map((role) => role['org-level']).filter(Boolean);
+    const levels = roles.map((role) => role['org-level']?.trim()).filter(Boolean);
     const options = [...new Set(levels)].sort().map((level) => ({ value: level, label: level }));
     return [{ value: '', label: 'All Org-Levels' }, ...options];
   }, [roles]);
 
   const uniqueMediums = useMemo(() => {
-    const mediums = roles.map((role) => role.medium).filter(Boolean);
+    const mediums = roles.map((role) => role.medium?.trim()).filter(Boolean);
     const options = [...new Set(mediums)].sort().map((medium) => ({ value: medium, label: medium }));
     return [{ value: '', label: 'All Mediums' }, ...options];
   }, [roles]);
@@ -66,13 +66,13 @@ function App() {
       const selectedLevelValues = selectedLevel.map(option => option.value);
       const matchesLevel =
         selectedLevelValues.length === 0 ||
-        selectedLevelValues.includes(role['org-level']);
+        selectedLevelValues.includes(role['org-level']?.trim());
 
       // Medium filter
       const selectedMediumValues = selectedMedium.map(option => option.value);
       const matchesMedium =
         selectedMediumValues.length === 0 ||
-        selectedMediumValues.includes(role.medium);
+        selectedMediumValues.includes(role.medium?.trim());
 
       return matchesIndustry && matchesLevel && matchesMedium;
     });
