@@ -101,3 +101,82 @@ This project is configured for deployment to GitHub Pages.
     Go to your GitHub repository settings -> "Pages" and ensure that GitHub Pages is configured to deploy from the `gh-pages` branch.
 
 Your application will then be accessible at the URL specified in your `homepage` field (e.g., `https://jenswedin.github.io/roles-dashboard/`).
+
+## Data Export & Import
+
+This project includes scripts to export data from Supabase to JSON and import JSON changes back to Supabase.
+
+### Quick Start: Syncing GitHub PR Changes
+
+When you receive a PR with changes to `design_roles_data.json`:
+
+```bash
+# 1. Merge PR on GitHub, then pull locally
+git pull origin main
+
+# 2. Preview what will change
+npm run data:import:dry
+
+# 3. Apply the changes
+npm run data:import
+```
+
+See `DATA_SYNC_GUIDE.md` for detailed instructions.
+
+### Export Data from Supabase
+
+Export all design roles from Supabase to a JSON file:
+
+```bash
+node exportData.js
+```
+
+This creates `design_roles_data.json` with all records from the database.
+
+### Import Data to Supabase
+
+Import changes from the JSON file back to Supabase:
+
+```bash
+# Preview changes without applying them (recommended first step)
+node importData.js --dry-run
+
+# Apply changes (insert new + update existing)
+node importData.js
+
+# Apply all changes including deletions
+node importData.js --delete-orphans
+
+# Preview all changes including deletions
+node importData.js --dry-run --delete-orphans
+```
+
+**Import Script Features:**
+- ✅ **Dry Run Mode**: Preview changes before applying
+- ✅ **Smart Upsert**: Updates existing records, inserts new ones
+- ✅ **Change Detection**: Only modifies records that have changed
+- ✅ **Detailed Logging**: Shows exactly what will change
+- ✅ **Safe by Default**: Won't delete records unless `--delete-orphans` is used
+
+### Workflow for GitHub PRs
+
+When you receive a PR with changes to `design_roles_data.json`:
+
+1. **Review the PR** - Check the JSON changes in GitHub
+2. **Merge the PR** - Merge to main branch
+3. **Pull changes locally** - `git pull origin main`
+4. **Preview import** - `node importData.js --dry-run`
+5. **Apply changes** - `node importData.js`
+6. **Verify** - Check Supabase to confirm changes
+
+**Optional: Automated Sync with GitHub Actions**
+
+A GitHub Actions workflow is included at `.github/workflows/sync-to-supabase.yml` that can automatically sync JSON changes to Supabase when PRs are merged. To enable:
+
+1. Add Supabase credentials to GitHub Secrets:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+2. The workflow will run on changes to `design_roles_data.json`
+3. Manual approval is required before syncing to production
+
+

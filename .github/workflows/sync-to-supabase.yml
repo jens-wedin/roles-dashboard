@@ -1,0 +1,54 @@
+name: Sync JSON to Supabase
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'roles-dashboard/design_roles_data.json'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  sync-to-supabase:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: ./roles-dashboard
+        run: npm install
+
+      - name: Run import script (dry-run)
+        working-directory: ./roles-dashboard
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: node importData.js --dry-run
+
+      - name: Wait for approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: jens-wedin
+          minimum-approvals: 1
+          issue-title: "Approve Supabase Sync"
+          issue-body: "Please review the dry-run output above and approve to sync changes to Supabase."
+
+      - name: Sync to Supabase
+        working-directory: ./roles-dashboard
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: node importData.js
+
+      - name: Post summary
+        if: always()
+        run: |
+          echo "✅ Sync completed successfully" >> $GITHUB_STEP_SUMMARY
