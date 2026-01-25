@@ -89,7 +89,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Design Roles Dashboard</h1>
+      <h1>Design roles Index</h1>
 
       <div className="filters" style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
