@@ -1,9 +1,13 @@
 import { useState, useEffect, useMemo } from 'react'
-import Select from 'react-select'
 import { supabase } from './supabaseClient'
 import RoleList from './components/RoleList'
+import Filters from './components/Filters'
 import './App.css'
 
+/**
+ * App Component: Orchestrates the Roles Dashboard.
+ * Handles data fetching, state management, and filtering.
+ */
 function App() {
   const [roles, setRoles] = useState([])
   const [loading, setLoading] = useState(true)
@@ -14,165 +18,93 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
+    const getRoles = async () => {
+      try {
+        setLoading(true)
+        const { data, error } = await supabase.from('design_roles').select('*')
+        if (error) throw error
+        setRoles(data || [])
+      } catch (err) {
+        console.error('Error fetching roles:', err.message)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
     getRoles()
   }, [])
-
-  async function getRoles() {
-    try {
-      setLoading(true)
-      const { data, error } = await supabase
-        .from('design_roles')
-        .select('*')
-      if (error) throw error
-      console.log('Fetched roles:', data)
-      setRoles(data)
-    } catch (error) {
-      console.error('Error fetching roles:', error.message)
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const uniqueIndustries = useMemo(() => {
     const allIndustries = roles.flatMap((role) =>
       role.industry ? role.industry.split(',').map((item) => item.trim()) : []
     ).filter(Boolean);
-    const options = [...new Set(allIndustries)].sort().map((industry) => ({ value: industry, label: industry }));
-    return [{ value: '', label: 'All Industries' }, ...options];
+    return [...new Set(allIndustries)].sort().map((ind) => ({ value: ind, label: ind }));
   }, [roles]);
 
   const uniqueLevels = useMemo(() => {
     const levels = roles.map((role) => role['org-level']?.trim()).filter(Boolean);
-    const options = [...new Set(levels)].sort().map((level) => ({ value: level, label: level }));
-    return [{ value: '', label: 'All Org-Levels' }, ...options];
+    return [...new Set(levels)].sort().map((lvl) => ({ value: lvl, label: lvl }));
   }, [roles]);
 
   const uniqueMediums = useMemo(() => {
     const mediums = roles.map((role) => role.medium?.trim()).filter(Boolean);
-    const options = [...new Set(mediums)].sort().map((medium) => ({ value: medium, label: medium }));
-    return [{ value: '', label: 'All Mediums' }, ...options];
+    return [...new Set(mediums)].sort().map((med) => ({ value: med, label: med }));
   }, [roles]);
 
   const filteredRoles = useMemo(() => {
     return roles.filter((role) => {
-      // Industry filter (handles comma-separated values)
-      const roleIndustries = role.industry ? role.industry.split(',').map(item => item.trim()) : [];
-      const selectedIndustryValues = selectedIndustry.map(option => option.value);
-      const matchesIndustry =
-        selectedIndustryValues.length === 0 ||
-        selectedIndustryValues.some((filterVal) => roleIndustries.includes(filterVal));
+      const roleIndustries = role.industry ? role.industry.split(',').map(i => i.trim()) : [];
+      const selectedIndValues = selectedIndustry.map(o => o.value);
+      const matchesIndustry = selectedIndValues.length === 0 ||
+        selectedIndValues.some(v => roleIndustries.includes(v));
 
-      // Org-Level filter
-      const selectedLevelValues = selectedLevel.map(option => option.value);
-      const matchesLevel =
-        selectedLevelValues.length === 0 ||
-        selectedLevelValues.includes(role['org-level']?.trim());
+      const selectedLvlValues = selectedLevel.map(o => o.value);
+      const matchesLevel = selectedLvlValues.length === 0 ||
+        selectedLvlValues.includes(role['org-level']?.trim());
 
-      // Medium filter
-      const selectedMediumValues = selectedMedium.map(option => option.value);
-      const matchesMedium =
-        selectedMediumValues.length === 0 ||
-        selectedMediumValues.includes(role.medium?.trim());
+      const selectedMedValues = selectedMedium.map(o => o.value);
+      const matchesMedium = selectedMedValues.length === 0 ||
+        selectedMedValues.includes(role.medium?.trim());
 
-      // Search term filter (only applies if length >= 3)
-      const matchesSearch =
-        searchTerm.length < 3 ||
+      const matchesSearch = searchTerm.length < 3 ||
         role['role-name']?.toLowerCase().includes(searchTerm.toLowerCase());
 
       return matchesIndustry && matchesLevel && matchesMedium && matchesSearch;
     });
   }, [roles, selectedIndustry, selectedLevel, selectedMedium, searchTerm]);
 
-  if (loading) return <p>Loading roles...</p>
-  if (error) return <p>Error: {error}</p>
+  if (loading) return (
+    <div className="status-container">
+      <div className="spinner"></div>
+      <p>Loading roles...</p>
+    </div>
+  )
+
+  if (error) return <p className="error-message">Error: {error}</p>
 
   return (
-    <div className="App">
-      <h1>Design roles Index</h1>
+    <main className="App">
+      <header className="app-header">
+        <h1>Design roles Index</h1>
+        <p className="app-subtitle">A curated collection of industry roles and responsibilities.</p>
+      </header>
 
-      <div className="filters" style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <label htmlFor="search-filter">Search Roles:</label>
-          <input
-            id="search-filter"
-            type="text"
-            placeholder="Search by role name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              fontSize: '16px',
-              minWidth: '250px'
-            }}
-          />
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <label htmlFor="industry-filter">Industry:</label>
-          <Select
-            id="industry-filter"
-            isMulti
-            options={uniqueIndustries}
-            value={selectedIndustry}
-            onChange={(selectedOptions) => {
-              if (selectedOptions && selectedOptions.some(option => option.value === '')) {
-                setSelectedIndustry([]);
-              } else {
-                setSelectedIndustry(selectedOptions);
-              }
-            }}
-            className="react-select-container"
-            classNamePrefix="react-select"
-            placeholder="Select Industries"
-          />
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <label htmlFor="level-filter">Org-Level:</label>
-          <Select
-            id="level-filter"
-            isMulti
-            options={uniqueLevels}
-            value={selectedLevel}
-            onChange={(selectedOptions) => {
-              if (selectedOptions && selectedOptions.some(option => option.value === '')) {
-                setSelectedLevel([]);
-              } else {
-                setSelectedLevel(selectedOptions);
-              }
-            }}
-            className="react-select-container"
-            classNamePrefix="react-select"
-            placeholder="Select Org-Levels"
-          />
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <label htmlFor="medium-filter">Medium:</label>
-          <Select
-            id="medium-filter"
-            isMulti
-            options={uniqueMediums}
-            value={selectedMedium}
-            onChange={(selectedOptions) => {
-              if (selectedOptions && selectedOptions.some(option => option.value === '')) {
-                setSelectedMedium([]);
-              } else {
-                setSelectedMedium(selectedOptions);
-              }
-            }}
-            className="react-select-container"
-            classNamePrefix="react-select"
-            placeholder="Select Mediums"
-          />
-        </div>
-      </div>
+      <Filters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedIndustry={selectedIndustry}
+        setSelectedIndustry={setSelectedIndustry}
+        uniqueIndustries={uniqueIndustries}
+        selectedLevel={selectedLevel}
+        setSelectedLevel={setSelectedLevel}
+        uniqueLevels={uniqueLevels}
+        selectedMedium={selectedMedium}
+        setSelectedMedium={setSelectedMedium}
+        uniqueMediums={uniqueMediums}
+      />
 
       <RoleList roles={filteredRoles} />
-    </div>
+    </main>
   )
 }
 
