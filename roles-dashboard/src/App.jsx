@@ -86,7 +86,7 @@ function App() {
     <main className="App">
       <header className="app-header">
         <h1>Design roles Index</h1>
-        <p className="app-subtitle">A curated collection of industry roles and responsibilities.</p>
+        <p className="app-subtitle">A curated collection of {roles.length} industry roles and responsibilities.</p>
       </header>
 
       <Filters
