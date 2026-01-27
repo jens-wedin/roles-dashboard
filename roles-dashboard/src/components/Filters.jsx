@@ -25,17 +25,22 @@ const Filters = ({
                 <input
                     id="search-filter"
                     type="text"
+                    aria-describedby="search-desc"
                     placeholder="Search by role name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="search-input"
                 />
+                <span id="search-desc" className="sr-only">
+                    Enter at least 2 characters to filter roles by name.
+                </span>
             </div>
 
             <div className="filter-group">
                 <label htmlFor="industry-filter">Industry</label>
                 <Select
-                    id="industry-filter"
+                    inputId="industry-filter"
+                    aria-describedby="industry-desc"
                     isMulti
                     options={uniqueIndustries}
                     value={selectedIndustry}
@@ -44,12 +49,16 @@ const Filters = ({
                     classNamePrefix="react-select"
                     placeholder="Select Industries"
                 />
+                <span id="industry-desc" className="sr-only">
+                    Filter roles by industry. You can select multiple options.
+                </span>
             </div>
 
             <div className="filter-group">
                 <label htmlFor="level-filter">Org-Level</label>
                 <Select
-                    id="level-filter"
+                    inputId="level-filter"
+                    aria-describedby="level-desc"
                     isMulti
                     options={uniqueLevels}
                     value={selectedLevel}
@@ -58,12 +67,16 @@ const Filters = ({
                     classNamePrefix="react-select"
                     placeholder="Select Levels"
                 />
+                <span id="level-desc" className="sr-only">
+                    Filter roles by organizational level. You can select multiple options.
+                </span>
             </div>
 
             <div className="filter-group">
                 <label htmlFor="medium-filter">Medium</label>
                 <Select
-                    id="medium-filter"
+                    inputId="medium-filter"
+                    aria-describedby="medium-desc"
                     isMulti
                     options={uniqueMediums}
                     value={selectedMedium}
@@ -72,6 +85,9 @@ const Filters = ({
                     classNamePrefix="react-select"
                     placeholder="Select Mediums"
                 />
+                <span id="medium-desc" className="sr-only">
+                    Filter roles by medium (Digital, Physical, or Sound). You can select multiple options.
+                </span>
             </div>
         </section>
     );

@@ -16,6 +16,14 @@ function App() {
   const [selectedLevel, setSelectedLevel] = useState([])
   const [selectedMedium, setSelectedMedium] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
 
   useEffect(() => {
     const getRoles = async () => {
@@ -66,12 +74,24 @@ function App() {
       const matchesMedium = selectedMedValues.length === 0 ||
         selectedMedValues.includes(role.medium?.trim());
 
-      const matchesSearch = searchTerm.length < 3 ||
-        role['role-name']?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = debouncedSearchTerm.length < 2 ||
+        role['role-name']?.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
 
       return matchesIndustry && matchesLevel && matchesMedium && matchesSearch;
     });
-  }, [roles, selectedIndustry, selectedLevel, selectedMedium, searchTerm]);
+  }, [roles, selectedIndustry, selectedLevel, selectedMedium, debouncedSearchTerm]);
+
+  const searchStatus = useMemo(() => {
+    const count = filteredRoles.length;
+    const total = roles.length;
+    let message = `Showing ${count} out of ${total} roles.`;
+    
+    if (debouncedSearchTerm.length >= 2) {
+      message = `Showing ${count} out of ${total} roles for "${debouncedSearchTerm}".`;
+    }
+    
+    return message;
+  }, [filteredRoles.length, roles.length, debouncedSearchTerm]);
 
   /**
    * Toggles a filter value. If the value is not selected, adds it.
@@ -129,6 +149,10 @@ function App() {
         setSelectedMedium={setSelectedMedium}
         uniqueMediums={uniqueMediums}
       />
+
+      <div role="status" aria-live="polite" className="sr-only">
+        {searchStatus}
+      </div>
 
       <RoleList 
         roles={filteredRoles} 

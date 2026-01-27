@@ -8,7 +8,9 @@
   --color-surface: hsl(220, 20%, 100%);
   --color-text: hsl(220, 40%, 15%);
   --color-text-muted: hsl(220, 15%, 45%);
+  --color-text-darker: hsl(220, 15%, 35%);
   --color-primary: hsl(220, 80%, 55%);
+  --color-primary-dark: hsl(220, 80%, 35%);
   --color-primary-hover: hsl(220, 80%, 65%);
   --color-border: hsl(220, 15%, 85%);
   

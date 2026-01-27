@@ -21,6 +21,7 @@ export const getBadgeColor = (text) => {
         hash = text.charCodeAt(i) + ((hash << 5) - hash);
     }
     // Use HSL for better control over lightness and saturation
+    // Lightness set to 35% to ensure white text meets WCAG AA contrast requirements
     const h = Math.abs(hash % 360);
-    return `hsl(${h}, 60%, 45%)`;
+    return `hsl(${h}, 60%, 35%)`;
 };
