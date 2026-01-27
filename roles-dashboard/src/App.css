@@ -131,6 +131,20 @@
   text-transform: uppercase;
   background-color: var(--badge-color);
   color: white;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.badge:hover, .badge:focus {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+  outline: none;
+  box-shadow: 0 0 0 2px hsla(220, 80%, 55%, 0.2);
+}
+
+.badge:active {
+  transform: scale(0.95);
 }
 
 .role-card__description {
@@ -188,6 +202,20 @@
   background: hsla(220, 20%, 90%, 0.5);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.industry-tag:hover, .industry-tag:focus {
+  background: hsla(220, 80%, 55%, 0.1);
+  color: var(--color-primary);
+  border-color: hsla(220, 80%, 55%, 0.3);
+  outline: none;
+}
+
+.industry-tag:active {
+  transform: scale(0.95);
 }
 
 /* Status Containers */

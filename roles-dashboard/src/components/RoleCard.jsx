@@ -5,10 +5,12 @@ import { formatToList, getBadgeColor } from '../utils/utils';
  * RoleCard Component: Displays individual role details.
  * Follows semantic HTML and accessibility standards.
  */
-const RoleCard = ({ role }) => {
+const RoleCard = ({ role, onFilterClick }) => {
     const responsibilities = formatToList(role.responsibilities);
     const skills = formatToList(role.skills);
     const industries = role.industry ? role.industry.split(',').map(i => i.trim()) : [];
+    const orgLevel = role['org-level']?.trim();
+    const medium = role.medium?.trim();
 
     return (
         <article className="role-card" aria-labelledby={`role-title-${role.id}`}>
@@ -17,21 +19,27 @@ const RoleCard = ({ role }) => {
                     {role['role-name']}
                 </h3>
                 <div className="role-card__badges">
-                    {role['org-level'] && (
-                        <span
+                    {orgLevel && (
+                        <button
+                            type="button"
                             className="badge badge--level"
-                            style={{ '--badge-color': getBadgeColor(role['org-level']) }}
+                            style={{ '--badge-color': getBadgeColor(orgLevel) }}
+                            onClick={() => onFilterClick('level', orgLevel)}
+                            aria-label={`Filter by level: ${orgLevel}`}
                         >
-                            {role['org-level']}
-                        </span>
+                            {orgLevel}
+                        </button>
                     )}
-                    {role.medium && (
-                        <span
+                    {medium && (
+                        <button
+                            type="button"
                             className="badge badge--medium"
-                            style={{ '--badge-color': getBadgeColor(role.medium) }}
+                            style={{ '--badge-color': getBadgeColor(medium) }}
+                            onClick={() => onFilterClick('medium', medium)}
+                            aria-label={`Filter by medium: ${medium}`}
                         >
-                            {role.medium}
-                        </span>
+                            {medium}
+                        </button>
                     )}
                 </div>
             </header>
@@ -65,7 +73,15 @@ const RoleCard = ({ role }) => {
             <footer className="role-card__footer">
                 <div className="role-card__industries">
                     {industries.map((industry, idx) => (
-                        <span key={idx} className="industry-tag">{industry}</span>
+                        <button
+                            key={idx}
+                            type="button"
+                            className="industry-tag"
+                            onClick={() => onFilterClick('industry', industry)}
+                            aria-label={`Filter by industry: ${industry}`}
+                        >
+                            {industry}
+                        </button>
                     ))}
                 </div>
             </footer>

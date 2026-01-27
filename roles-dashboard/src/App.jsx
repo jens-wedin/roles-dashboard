@@ -73,6 +73,33 @@ function App() {
     });
   }, [roles, selectedIndustry, selectedLevel, selectedMedium, searchTerm]);
 
+  /**
+   * Toggles a filter value. If the value is not selected, adds it.
+   * Also scrolls the window to the top to show the filtered results.
+   * @param {string} category - The filter category ('industry', 'level', or 'medium')
+   * @param {string} value - The value to toggle
+   */
+  const handleFilterClick = (category, value) => {
+    const trimmedValue = value?.trim();
+    if (!trimmedValue) return;
+
+    const filterMap = {
+      industry: { state: selectedIndustry, setter: setSelectedIndustry },
+      level: { state: selectedLevel, setter: setSelectedLevel },
+      medium: { state: selectedMedium, setter: setSelectedMedium }
+    };
+
+    const { state, setter } = filterMap[category];
+    
+    // Check if the value is already selected to avoid duplicates
+    if (!state.some(item => item.value === trimmedValue)) {
+      setter([...state, { value: trimmedValue, label: trimmedValue }]);
+    }
+
+    // Scroll to top to show the filters and results
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (loading) return (
     <div className="status-container">
       <div className="spinner"></div>
@@ -103,7 +130,10 @@ function App() {
         uniqueMediums={uniqueMediums}
       />
 
-      <RoleList roles={filteredRoles} />
+      <RoleList 
+        roles={filteredRoles} 
+        onFilterClick={handleFilterClick}
+      />
     </main>
   )
 }
