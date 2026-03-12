@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1] - 2026-03-12
+
+### Fixed
+- Skill badges now wrap long text instead of being clipped
+
 ## [1.0.0] - 2026-03-12
 
 ### Added
