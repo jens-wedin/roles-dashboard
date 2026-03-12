@@ -2,7 +2,7 @@
  * Formats a raw text block into an array of items.
  * Handles both newline-separated and hyphen/asterisk-prefixed lists.
  */
-export const formatToList = (text) => {
+export const formatToList = (text: string | null | undefined): string[] => {
     if (!text) return [];
     return text
         .split('\n')
@@ -14,7 +14,7 @@ export const formatToList = (text) => {
  * Generates a consistent, accessible background color from a string.
  * Uses a simple hash function.
  */
-export const getBadgeColor = (text) => {
+export const getBadgeColor = (text: string | null | undefined): string => {
     if (!text) return 'hsl(220, 15%, 85%)';
     let hash = 0;
     for (let i = 0; i < text.length; i++) {

@@ -1,106 +1,95 @@
 # Design Roles Dashboard
 
-This project is a React application built with Vite that displays a dashboard of design roles and their metadata, fetched from a Supabase database.
+A curated collection of design industry roles and responsibilities. Browse, search, and filter roles by industry, organizational level, and medium.
+
+## Tech Stack
+
+- **React 19** with TypeScript
+- **Vite 7** for bundling and development
+- **shadcn/ui** component library (Base Nova style)
+- **Tailwind CSS v4** for styling
+- **Supabase** for data backend
+- **Lucide React** for icons
 
 ## Features
 
-*   **Vite + React:** Modern frontend development setup.
-*   **Supabase Integration:** Connects to a Supabase database to fetch design role data.
-*   **Dynamic Role Cards:** Displays each design role in a card format, showing the role name, description, responsibilities, and skills.
-*   **Colorful Badges:** Dynamically generated colorful badges for 'Industry', 'Org-Level', and 'Medium' properties.
-*   **Multi-Select Filters:** Allows users to filter roles by 'Industry', 'Org-Level', and 'Medium' using `react-select` multi-select dropdowns. The 'Industry' filter also handles comma-separated values from the database.
-*   **Bullet Point Lists:** Transforms plain text lists in 'Responsibilities' and 'Skills' into proper HTML bullet points.
-*   **GitHub Pages Deployment Ready:** Configured for easy deployment to GitHub Pages.
+- Searchable role catalog with debounced search
+- Multi-select filters for Industry, Org-Level, and Medium
+- Clickable badges to quickly add filters from role cards
+- Light/Dark/System theme toggle with localStorage persistence
+- Responsive grid layout
+- Accessible UI with ARIA labels, keyboard navigation, and screen reader support
+- GitHub Pages deployment
 
 ## Setup
 
-1.  **Clone the Repository:**
+1. **Clone the Repository:**
     ```bash
     git clone https://github.com/jenswedin/roles-dashboard.git
     cd roles-dashboard
     ```
 
-2.  **Install Dependencies:**
+2. **Install Dependencies:**
     ```bash
     npm install
     ```
 
-3.  **Supabase Configuration:**
-    *   Create a `.env` file in the root of the `roles-dashboard` directory.
-    *   Add your Supabase project URL and public `anon` key:
-        ```
-        VITE_SUPABASE_URL="YOUR_SUPABASE_URL"
-        VITE_SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY"
-        ```
-    *   Ensure your Supabase database has a `design_roles` table with columns like `role-name`, `description`, `responsibilities`, `skills`, `industry`, `org-level`, and `medium`.
-    *   Configure Row Level Security (RLS) policies in your Supabase project to allow `SELECT` access for the `anon` role on the `design_roles` table.
+3. **Supabase Configuration:**
+    Create a `.env` file in the root of the `roles-dashboard` directory:
+    ```
+    VITE_SUPABASE_URL="YOUR_SUPABASE_URL"
+    VITE_SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY"
+    ```
+    Ensure your Supabase database has a `design_roles` table with columns like `role-name`, `description`, `responsibilities`, `skills`, `industry`, `org-level`, and `medium`.
 
-4.  **Run Locally:**
+4. **Run Locally:**
     ```bash
     npm run dev
     ```
-    Open your browser to `http://localhost:5173/` (or the address provided in your terminal).
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+| `npm run deploy` | Deploy to GitHub Pages |
+| `npm run data:export` | Export data from Supabase |
+| `npm run data:import` | Import data to Supabase |
+
+## Project Structure
+
+```
+src/
+  components/
+    ui/                # shadcn/ui components (Card, Badge, Button, Input, etc.)
+    mode-toggle.tsx    # Light/Dark/System theme toggle
+    theme-provider.tsx # Theme context provider
+    Filters.tsx        # Search and multi-select filter controls
+    RoleCard.tsx       # Individual role card display
+    RoleList.tsx       # Grid container for role cards
+  lib/
+    utils.ts           # cn() utility for class merging
+  utils/
+    utils.ts           # formatToList(), getBadgeColor() helpers
+  types.ts             # TypeScript interfaces (Role, FilterOption)
+  App.tsx              # Main application component
+  main.tsx             # Entry point with ThemeProvider
+  supabaseClient.ts    # Supabase client configuration
+```
 
 ## Deployment to GitHub Pages
 
-This project is configured for deployment to GitHub Pages.
+```bash
+npm run build
+npm run deploy
+```
 
-1.  **Install `gh-pages` (if not already installed):**
-    ```bash
-    npm install gh-pages --save-dev
-    ```
+Deployed at: https://jens-wedin.github.io/roles-dashboard/
 
-2.  **Update `package.json`:**
-    Ensure your `package.json` includes the `homepage` and `deploy` script:
-    ```json
-    {
-      "name": "roles-dashboard",
-      "private": true,
-      "version": "0.0.0",
-      "type": "module",
-      "homepage": "https://jenswedin.github.io/roles-dashboard/", // Add this line
-      "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "lint": "eslint .",
-        "preview": "vite preview",
-        "deploy": "gh-pages -d dist" // Add this line
-      },
-      "dependencies": {
-        // ...
-      },
-      "devDependencies": {
-        // ...
-        "gh-pages": "^6.3.0", // Ensure gh-pages is listed here
-        // ...
-      }
-    }
-    ```
-    **Important:** Replace `jenswedin` with your GitHub username and `roles-dashboard` with your repository name in the `homepage` URL if different.
-
-3.  **Update `vite.config.js`:**
-    Ensure your `vite.config.js` includes the `base` option:
-    ```javascript
-    import { defineConfig } from 'vite'
-    import react from '@vitejs/plugin-react'
-
-    // https://vitejs.dev/config/
-    export default defineConfig({
-      plugins: [react()],
-      base: '/roles-dashboard/', // Add this line (must match your repository name)
-    })
-    ```
-
-4.  **Deploy:**
-    ```bash
-    npm run build
-    npm run deploy
-    ```
-
-5.  **Enable GitHub Pages:**
-    Go to your GitHub repository settings -> "Pages" and ensure that GitHub Pages is configured to deploy from the `gh-pages` branch.
-
-Your application will then be accessible at the URL specified in your `homepage` field (e.g., `https://jenswedin.github.io/roles-dashboard/`).
+Ensure GitHub Pages is configured to deploy from the `gh-pages` branch in repository settings.
 
 ## Data Export & Import
 
@@ -125,20 +114,14 @@ See `DATA_SYNC_GUIDE.md` for detailed instructions.
 
 ### Export Data from Supabase
 
-Export all design roles from Supabase to a JSON file:
-
 ```bash
 node exportData.js
 ```
 
-This creates `design_roles_data.json` with all records from the database.
-
 ### Import Data to Supabase
 
-Import changes from the JSON file back to Supabase:
-
 ```bash
-# Preview changes without applying them (recommended first step)
+# Preview changes without applying them
 node importData.js --dry-run
 
 # Apply changes (insert new + update existing)
@@ -146,37 +129,4 @@ node importData.js
 
 # Apply all changes including deletions
 node importData.js --delete-orphans
-
-# Preview all changes including deletions
-node importData.js --dry-run --delete-orphans
 ```
-
-**Import Script Features:**
-- ✅ **Dry Run Mode**: Preview changes before applying
-- ✅ **Smart Upsert**: Updates existing records, inserts new ones
-- ✅ **Change Detection**: Only modifies records that have changed
-- ✅ **Detailed Logging**: Shows exactly what will change
-- ✅ **Safe by Default**: Won't delete records unless `--delete-orphans` is used
-
-### Workflow for GitHub PRs
-
-When you receive a PR with changes to `design_roles_data.json`:
-
-1. **Review the PR** - Check the JSON changes in GitHub
-2. **Merge the PR** - Merge to main branch
-3. **Pull changes locally** - `git pull origin main`
-4. **Preview import** - `node importData.js --dry-run`
-5. **Apply changes** - `node importData.js`
-6. **Verify** - Check Supabase to confirm changes
-
-**Optional: Automated Sync with GitHub Actions**
-
-A GitHub Actions workflow is included at `.github/workflows/sync-to-supabase.yml` that can automatically sync JSON changes to Supabase when PRs are merged. To enable:
-
-1. Add Supabase credentials to GitHub Secrets:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-2. The workflow will run on changes to `design_roles_data.json`
-3. Manual approval is required before syncing to production
-
-
