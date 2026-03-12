@@ -82,9 +82,11 @@ src/
 
 ## Deployment to GitHub Pages
 
+The git repository root is the parent directory, so `gh-pages` needs an explicit `--repo` flag:
+
 ```bash
 npm run build
-npm run deploy
+npx gh-pages -d dist --repo "$(git -C .. remote get-url origin)"
 ```
 
 Deployed at: https://jens-wedin.github.io/roles-dashboard/
