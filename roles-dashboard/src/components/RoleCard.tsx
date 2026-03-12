@@ -103,7 +103,7 @@ const RoleCard = ({ role, onFilterClick }: RoleCardProps) => {
             </h4>
             <div className="flex flex-wrap gap-1">
               {skills.map((skill, idx) => (
-                <Badge key={idx} variant="outline" className="text-xs">
+                <Badge key={idx} variant="outline" className="h-auto whitespace-normal text-xs">
                   {skill}
                 </Badge>
               ))}
